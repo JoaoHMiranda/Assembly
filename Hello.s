@@ -17,4 +17,4 @@ int 80h
 
 
 mov eax,1 ;finalizar
-int 80h
+int 80h ;syscall
