@@ -9,7 +9,7 @@ segment .text
 global _start
 _start:
 
-mov eax,4 ;print
+mov eax,4 ;print/write
 mov ebx,1 ;fd tela
 mov ecx,mens ;ponteiro string
 mov edx,tam ;qdde caracteres
