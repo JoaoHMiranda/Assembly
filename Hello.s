@@ -1,20 +1,20 @@
 ;Hello
 
-segment .data
+segment .data ;declarar dados
 
-mens db "Bom dia!",10
-tam equ $-mens
+mens db "Bom dia!",10 ;declarar variavel
+tam equ $-mens ;tamanho da mens
 
 segment .text
 global _start
 _start:
 
-mov eax,4
-mov ebx,1
-mov ecx,mens
-mov edx,tam
+mov eax,4 ;print
+mov ebx,1 ;fd tela
+mov ecx,mens ;ponteiro string
+mov edx,tam ;qdde caracteres
 int 80h
 
 
-mov eax,1
+mov eax,1 ;finalizar
 int 80h
