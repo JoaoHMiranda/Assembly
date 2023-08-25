@@ -53,7 +53,7 @@ int 80h
 mov eax,4 ;print
 mov ebx,1 ;fd tela
 mov ecx,buff ;ponteiro string
-mov edx,qrec ;qdde caracteres
+mov edx,[qrec] ;qdde caracteres
 int 80h
 
 
