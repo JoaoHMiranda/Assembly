@@ -46,6 +46,7 @@ mov [qrec],eax ;recebida >=1
 cmp[buff],byte "a"
 jb then
 
+
 ;ele não é menor que a
 ;compara se é maior que z(esta fora)
 cmp[buff],byte "z"
@@ -70,6 +71,7 @@ mov ebx,1 ;fd tela
 mov ecx,mens2 ;ponteiro string
 mov edx,tam2 ;qdde caracteres
 int 80h
+
 
 contin:
 ;continua
