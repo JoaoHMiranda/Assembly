@@ -42,12 +42,12 @@ mov [qrec],eax ;recebida >=1
 
 
 
-;comparar
+;comparar se é menor que a(esta fora)
 cmp[buff],byte "a"
 jb then
 
-;ele não é menor que a 
-;esta no intervalo
+;ele não é menor que a
+;compara se é maior que z(esta fora)
 cmp[buff],byte "z"
 ja then
 
