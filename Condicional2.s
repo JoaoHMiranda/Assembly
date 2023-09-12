@@ -46,11 +46,14 @@ mov [qrec],eax ;recebida >=1
 cmp[buff],byte "a"
 jb then
 
-; entra
+;ele não é menor que a 
+;esta no intervalo
 cmp[buff],byte "z"
 ja then
 
-;entra
+
+;ele não é maior que z
+;esta no intervalo
 mov eax,4 ;print
 mov ebx,1 ;fd tela
 mov ecx,mens3 ;ponteiro string
@@ -60,6 +63,7 @@ jmp contin
 
 
 then:
+;menor que a ou maior que z 
 ;esta fora
 mov eax,4 ;print
 mov ebx,1 ;fd tela
