@@ -1,7 +1,7 @@
 
 segment .data ;declarar dados
 
-nome db "teste",0
+nome db "teste.txt",0
 
 mens db "erro",10  ;declarar variavel
 tam equ $-mens ;tamanho da mens
@@ -31,10 +31,7 @@ mov [fd],eax
 mov eax,0
 
 cmp [fd],eax
-jl erro
-jmp fechar
-
-erro:
+jge fechar
 
 mov eax,4 ;print
 mov ebx,1 ;fd tela
@@ -46,12 +43,14 @@ jmp fim
 fechar:
 
 mov eax,6
-mov ebx,fd
+mov ebx,[fd]
+int 80h
 
 mov eax,4 ;print
 mov ebx,1 ;fd tela
 mov ecx,mens2 ;ponteiro string
 mov edx,tam2;qdde caracteres
+int 80h
 
 fim:
 
