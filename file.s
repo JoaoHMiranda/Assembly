@@ -1,4 +1,3 @@
-
 segment .data ;declarar dados
 
 nome db "teste.txt",0
@@ -8,7 +7,6 @@ tam equ $-mens ;tamanho da mens
 
 mens2 db "fechado",10  ;declarar variavel
 tam2 equ $-mens2 ;tamanho da mens
-
 
 
 
