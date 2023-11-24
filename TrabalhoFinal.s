@@ -153,18 +153,10 @@ cmp esi,[qrec1]
 inc esi
 jb cripto
 
-;teste
-mov ecx,buf1
-mov edx,[qrec1]
-call print
-
-
 ;escrever
 call escrev
 cmp esi,[qrec1]
 je cripitografia
-
-jmp fim
 
 ;fechar arq1
 mov ebx,[fd1]
