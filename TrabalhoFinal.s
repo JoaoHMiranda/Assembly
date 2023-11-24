@@ -45,7 +45,7 @@ ler:
 mov eax,3
 mov ebx,[fd1]
 mov ecx,buf1
-mov edx,26
+mov edx,27
 int 80h
 ret
 
@@ -137,18 +137,20 @@ cripitografia:
 call ler
 mov [qrec1],eax
 
-mov esi,-1
+mov esi,0
 
 ;cripitografar
-cripto:
-inc esi
 
+cripto:
 mov ah,[buf1+esi]
 cmp ah,65
-jb cripto
+jb SemCrip
 
 call crip
-cmp esi,[qrec1] ;ente
+
+SemCrip:
+cmp esi,[qrec1]
+inc esi
 jb cripto
 
 ;teste
@@ -157,22 +159,21 @@ mov edx,[qrec1]
 call print
 
 
-
 ;escrever
-;call escrev
-cmp esi,26
+call escrev
+cmp esi,[qrec1]
 je cripitografia
 
 jmp fim
 
 ;fechar arq1
-;mov ebx,[fd1]
-;call fechar
+mov ebx,[fd1]
+call fechar
 
 ;fechar arq2
-;mov ebx,[fd2]
-;call fechar
-;jmp fim
+mov ebx,[fd2]
+call fechar
+jmp fim
 
 erro1:
 mov ecx,mens1 ;ponteiro string
