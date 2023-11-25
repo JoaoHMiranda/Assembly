@@ -1,14 +1,32 @@
-;condicinal
+;João Henrique e Sophia Luna
+;O trabalho tem como intuito ler um arquivo e cripitografar ele(alterando o primeiro caracter com o ultimo,conforme a tabela ACII)
+;A cripitografica atua do caracter 65 ate o 157 da tabela ascii
+
+
 segment .data ;declarar dados
 
-mens1 db "Digite uma frase",10  ;declarar variavel
+nome1 db "arq1.txt",0
+
+nome2 db "arq2.txt",0
+
+mens1 db "Erro ao abrir arquivo 1",10  ;declarar variavel
 tam1 equ $-mens1 ;tamanho da mens
 
-mens2 db "Sua mensagem criptografada :",10  ;declarar variavel
+mens2 db "Arquivo ja existente ",10  ;declarar variavel
 tam2 equ $-mens2 ;tamanho da mens
 
-mens3 db "Sua mensagem descriptografda :",10  ;declarar variavel
+mens3 db " Erro ao criar",10  ;declarar variavel
 tam3 equ $-mens3 ;tamanho da mens
+
+mens4 db "Erro ao criar Aruivo",10  ;declarar variavel
+tam4 equ $-mens4 ;tamanho da mens
+
+mens5 db "Deu certo",10  ;declarar variavel
+tam5 equ $-mens5 ;tamanho da mens
+
+
+
+
 
 
 segment .bss ;dados nao inicializados
@@ -16,110 +34,185 @@ segment .bss ;dados nao inicializados
 buf1 resb 100 ;reserva 100 espacos para buf1
 qrec1 resd 1 ;bytes recebidos
 
-buf2 resb 100 ;reserva 100 espacos para buf2
-qrec2 resd 1 ;bytes recebidos
+fd1 resb 100
+
+fd2 resb 100
+
+
+
 
 
 
 segment .text; linhas de codigos
+
+;funçoes
+abrir:
+mov eax,5
+mov ecx,2
+mov edx,0q777
+int 80h
+ret
+
+ler:
+mov eax,3
+mov ebx,[fd1]
+mov ecx,buf1
+mov edx,27
+int 80h
+ret
+
+
+criar:
+mov eax,8
+mov ecx,0q777
+int 80h
+ret
+
+fechar:
+mov eax,8
+int 80h
+ret
+
+print:
+mov eax,4
+mov ebx,1
+int 80h
+ret
+
+escrev:
+mov eax,4 ; 
+mov ebx,[fd2]
+mov ecx,buf1
+mov edx,[qrec1]
+int 80h
+ret
+
+
+crip:
+mov ah,[buf1+esi]
+mov al,157; valor para ser criptografado
+sub al,ah;faz a subtracao para criptografar
+mov [buf1+esi],al ;copiar
+ret
+
+
+
+
+
+
+
 global _start
 _start:
+;main
+
+;abrir arq 1
+mov ebx,nome1
+call abrir
 
 
-;print mens1
-mov eax,4 ;print
-mov ebx,1 ;fd tela
+
+;consegui?
+mov ebx,0
+cmp eax,ebx
+jl erro1
+
+
+;salvar fd1
+mov [fd1],eax
+
+
+;abrir arq 2
+mov ebx,nome2
+call abrir
+
+
+;consegui?
+mov ebx,0
+cmp eax,ebx
+jge erro2
+
+
+;cirar
+mov ebx,nome2
+call criar
+
+
+;consegui?
+mov ebx,0
+cmp eax,ebx
+jl erro3
+
+
+;salvar fd1
+mov [fd2],eax
+
+cripitografia:
+
+;ler
+call ler
+mov [qrec1],eax
+
+;start contador
+mov esi,0
+
+;cripitografar
+cripto:
+
+
+;ver se e menor que 65
+mov ah,[buf1+esi]
+cmp ah,65
+jb SemCrip
+
+
+
+;ver se e maior que 157
+cmp ah,157
+ja SemCrip
+
+
+;estava
+call crip
+
+
+SemCrip:
+inc esi
+cmp esi,[qrec1]
+jb cripto
+
+;escrever
+call escrev
+cmp esi,[qrec1]
+je cripitografia
+
+;fechar arq1
+mov ebx,[fd1]
+call fechar
+
+;fechar arq2
+mov ebx,[fd2]
+call fechar
+jmp fim
+
+erro1:
 mov ecx,mens1 ;ponteiro string
 mov edx,tam1 ;qdde caracteres
-int 80h
+call print
+jmp fim
 
-
-;read buf1
-mov eax,3 ;read
-mov ebx,0 ;fd do teclado
-mov ecx,buf1 ;destino(pont)
-mov edx,100 ;quantos maxima
-int 80h
-mov [qrec1],eax ;recebida >=1
-
-
-;inicializar indice
-mov esi,0 
-
-
-inic:
-
-mov ah,157; valor para ser criptografado
-mov al,[buf1+esi] ;caracter atual
-sub ah,al;faz a subtracao para criptografar
-mov [buf2+esi],ah ;copiar
-cmp al,10 ;enter?
-je sair
-inc esi; esi++
-jmp inic
-
-
-sair:
-
-;print mens2
-mov eax,4 ;print
-mov ebx,1 ;fd tela
+erro2:
 mov ecx,mens2 ;ponteiro string
 mov edx,tam2 ;qdde caracteres
-int 80h
+call print
+jmp fim
 
-
-;copiar a quebra de linha e depois o tamanho o tamanho de buf2
-
-mov [buf2+esi],byte 10 ;copiar queba de linha 
-inc esi; esi++
-mov [qrec2],esi ;tamanho do buf2
-
-;print buf2
-mov eax,4 ;print
-mov ebx,1 ;fd tela
-mov ecx,buf2 ;ponteiro string
-mov edx,[qrec2] ;qdde caracteres
-int 80h
-
-
-;inicializar indice
-mov esi,0 
-
-
-inic2:
-
-mov ah,157; valor para ser criptografado
-mov al,[buf2+esi] ;caracter atual
-sub ah,al;faz a subtracao para criptografar
-mov [buf1+esi],ah ;copiar
-cmp al,10 ;enter?
-je sair2
-inc esi; esi++
-jmp inic2
-
-sair2:
-
-;print mens3
-mov eax,4 ;print
-mov ebx,1 ;fd tela
+erro3:
 mov ecx,mens3 ;ponteiro string
 mov edx,tam3 ;qdde caracteres
-int 80h
-
-;copiar a quebra de linha e depois o tamanho o tamanho de buf2
-mov [buf1+esi],byte 10 ;copiar queba de linha 
-inc esi; esi++
-mov [qrec1],esi ;tamanho do buf2
+call print
+jmp fim
 
 
-;print buf1
-mov eax,4 ;print
-mov ebx,1 ;fd tela
-mov ecx,buf1 ;ponteiro string
-mov edx,[qrec1] ;qdde caracteres
-int 80h
-
-
+fim:
 mov eax,1 ;finalizar
 int 80h ;syscall
