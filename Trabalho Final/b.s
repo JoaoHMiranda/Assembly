@@ -19,6 +19,11 @@ tam4 equ $-mens4 ;tamanho da mens
 mens5 db "Deu certo",10  ;declarar variavel
 tam5 equ $-mens5 ;tamanho da mens
 
+
+
+
+
+
 segment .bss ;dados nao inicializados
 
 buf1 resb 100 ;reserva 100 espacos para buf1
@@ -31,9 +36,11 @@ fd2 resb 100
 
 
 
+
+
 segment .text; linhas de codigos
 
-
+;funçoes
 abrir:
 mov eax,5
 mov ecx,2
@@ -87,9 +94,11 @@ ret
 
 
 
+
+
 global _start
 _start:
-
+;main
 
 ;abrir arq 1
 mov ebx,nome1
@@ -138,17 +147,21 @@ cripitografia:
 call ler
 mov [qrec1],eax
 
+;start contador
 mov esi,0
 
 ;cripitografar
 
 cripto:
 mov ah,[buf1+esi]
+
+;ver se esta no intervalo
 cmp ah,65
 jb SemCrip
 
 call crip
 
+;estava
 SemCrip:
 inc esi
 cmp esi,[qrec1]
