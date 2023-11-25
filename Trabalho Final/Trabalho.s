@@ -90,7 +90,6 @@ ret
 
 crip:
 mov ah,157; valor para ser criptografado
-mov al,[buf1+esi] ;caracter atual
 sub ah,al;faz a subtracao para criptografar
 mov [buf1+esi],ah ;copiar
 ret
@@ -156,14 +155,13 @@ mov [qrec1],eax
 mov esi,0
 
 ;cripitografar
-
 cripto:
-mov ah,[buf1+esi]
+mov al,[buf1+esi]
 
 ;ver se esta no intervalo
-cmp al, 65
+cmp al,65
 jb SemCrip
-cmp al, 157
+cmp al,157
 jg SemCrip
 
 call crip
