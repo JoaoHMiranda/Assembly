@@ -150,8 +150,8 @@ jb SemCrip
 call crip
 
 SemCrip:
-cmp esi,[qrec1]
 inc esi
+cmp esi,[qrec1]
 jb cripto
 
 ;escrever
