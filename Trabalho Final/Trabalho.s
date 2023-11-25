@@ -1,3 +1,8 @@
+;João Henrique e Sophia Luna
+;O trabalho tem como Intuito ler um arquivo e cripitografar ele(auterando o primeiro caracter com o ultimo,conforme a tabela ACII)
+;A cripitografica atua do caracter 65 ate o 157 da tabela ascii
+
+
 segment .data ;declarar dados
 
 nome1 db "arq1.txt",0
