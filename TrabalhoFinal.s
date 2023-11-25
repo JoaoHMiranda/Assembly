@@ -68,12 +68,13 @@ int 80h
 ret
 
 escrev:
-mov eax,[qrec1]
-mov ebx,buf1
-mov ecx,[fd2]
-mov edx,4
+mov eax,4 ; 
+mov ebx,[fd2]
+mov ecx,buf1
+mov edx,[qrec1]
 int 80h
 ret
+
 
 crip:
 mov ah,157; valor para ser criptografado
