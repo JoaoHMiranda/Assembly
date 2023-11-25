@@ -1,5 +1,5 @@
 ;João Henrique e Sophia Luna
-;O trabalho tem como Intuito ler um arquivo e cripitografar ele(auterando o primeiro caracter com o ultimo,conforme a tabela ACII)
+;O trabalho tem como intuito ler um arquivo e cripitografar ele(alterando o primeiro caracter com o ultimo,conforme a tabela ACII)
 ;A cripitografica atua do caracter 65 ate o 157 da tabela ascii
 
 
@@ -161,8 +161,10 @@ cripto:
 mov ah,[buf1+esi]
 
 ;ver se esta no intervalo
-cmp ah,65
+cmp al, 65
 jb SemCrip
+cmp al, 157
+jg SemCrip
 
 call crip
 
