@@ -162,7 +162,7 @@ mov al,[buf1+esi]
 cmp al,65
 jb SemCrip
 cmp al,157
-jg SemCrip
+ja SemCrip
 
 call crip
 
