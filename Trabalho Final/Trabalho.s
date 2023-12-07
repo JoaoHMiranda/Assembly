@@ -31,12 +31,12 @@ tam5 equ $-mens5 ;tamanho da mens
 
 segment .bss ;dados nao inicializados
 
-buf1 resb 100 ;reserva 100 espacos para buf1
+buf1 resb 30;reserva 30 espacos para buf1
 qrec1 resd 1 ;bytes recebidos
 
-fd1 resb 100
+fd1 resb 1
 
-fd2 resb 100
+fd2 resb 1
 
 
 
@@ -48,8 +48,8 @@ segment .text; linhas de codigos
 ;funçoes
 abrir:
 mov eax,5
-mov ecx,2
-mov edx,0q777
+mov ecx,2 ;modo
+mov edx,0q777 ;permissoes totais
 int 80h
 ret
 
@@ -57,7 +57,7 @@ ler:
 mov eax,3
 mov ebx,[fd1]
 mov ecx,buf1
-mov edx,27
+mov edx,27 ;tamanho do bloco
 int 80h
 ret
 
@@ -73,13 +73,13 @@ mov eax,8
 int 80h
 ret
 
-print:
+print:  ;para mensagens
 mov eax,4
 mov ebx,1
 int 80h
 ret
 
-escrev:
+escrev: 
 mov eax,4 ; 
 mov ebx,[fd2]
 mov ecx,buf1
@@ -97,11 +97,8 @@ ret
 
 
 
-
-
-
 global _start
-_start:
+_start: ;ponto de entrada
 ;main
 
 ;abrir arq 1
@@ -111,12 +108,12 @@ call abrir
 
 
 ;consegui?
-mov ebx,0
+mov ebx,0  
 cmp eax,ebx
 jl erro1
 
 
-;salvar fd1
+;salvar fd1    ;mov de 1 dword
 mov [fd1],eax
 
 
