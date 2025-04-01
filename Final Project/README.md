@@ -1,7 +1,9 @@
 # Final Project: File Encryption in Assembly
 
 This project is a final assignment developed by João Henrique and Sophia Luna. It is written in assembly language for Linux and demonstrates file I/O along with a simple encryption algorithm. The program reads an input file (`input.txt`), encrypts its content by modifying each character within the ASCII range 65 to 157 using the formula:
-     encrypted = 157 - original
+    ```
+    encrypted = 157 - original
+    ```
 
 and writes the encrypted output to an output file (`output.txt`).
 
