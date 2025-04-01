@@ -4,8 +4,8 @@
 ;   This program reads an input file ("input.txt"), encrypts its contents by modifying 
 ;   each character in the ASCII range 65 to 157 using the formula:
 ;       encrypted = 157 - original
-;   and writes the encrypted data to an output file ("output.txt"). 
-;   Error messages are printed if file operations fail.
+;   and writes the encrypted data to an output file ("output.txt").
+;   If any file operation fails, an appropriate error message is printed.
 
 segment .data           ; Data segment
     inputFile   db "input.txt", 0
@@ -36,18 +36,19 @@ global _start
 ; Expects:
 ;   EBX = pointer to filename
 ;   ECX = mode (e.g., 2 for read/write)
-;   EDX = permissions (e.g., 0o777)
+;   EDX = permissions (set to 0o666 for read/write access)
 ; Returns:
 ;   EAX = file descriptor (or negative value on error)
 ;---------------------------------------
 openFile:
     mov eax, 5
+    mov edx, 0o666      ; Set permissions to 0666 (rw-rw-rw-)
     int 80h
     ret
 
 ;---------------------------------------
 ; readFile:
-; Reads up to 27 bytes from file descriptor stored in [fdIn] into buffer.
+; Reads up to 27 bytes from file descriptor in [fdIn] into buffer.
 ;---------------------------------------
 readFile:
     mov eax, 3         ; sys_read
@@ -62,10 +63,11 @@ readFile:
 ; Creates a file using syscall 8 (sys_creat).
 ; Expects:
 ;   EBX = pointer to filename
-;   ECX = permissions (e.g., 0o777)
+;   ECX = permissions (set to 0o666 for read/write access)
 ;---------------------------------------
 createFile:
     mov eax, 8
+    mov ecx, 0o666      ; Set permissions to 0666
     int 80h
     ret
 
@@ -121,24 +123,22 @@ encryptChar:
 ; _start: Program Entry Point
 ;---------------------------------------
 _start:
-    ; Open input file ("input.txt")
+    ; Open the input file ("input.txt")
     mov ebx, inputFile
     mov ecx, 2           ; read/write mode
-    mov edx, 0o777       ; full permissions
     call openFile
     cmp eax, 0
-    jl errorOpenIn       ; if negative, error
+    jl errorOpenIn       ; if error, jump to error handler
     mov [fdIn], eax
 
-    ; Try to open output file ("output.txt")
+    ; Try to open the output file ("output.txt")
     mov ebx, outputFile
     mov ecx, 2           ; read/write mode
-    mov edx, 0o777
     call openFile
     cmp eax, 0
     jge errorOpenOut     ; if file exists, error
 
-    ; Create output file
+    ; Create the output file
     mov ebx, outputFile
     call createFile
     cmp eax, 0
@@ -146,13 +146,13 @@ _start:
     mov [fdOut], eax
 
 encryption_loop:
-    ; Read from input file
+    ; Read from the input file
     call readFile
     mov [bytesRead], eax
     cmp eax, 0
     je done_encryption
 
-    mov esi, 0         ; Initialize index for buffer
+    mov esi, 0         ; Initialize buffer index
 
 encrypt_loop:
     mov al, [buffer + esi]
@@ -166,14 +166,15 @@ skip_encrypt:
     cmp esi, [bytesRead]
     jb encrypt_loop
 
-    ; Write the encrypted block to output file
+    ; Write the encrypted block to the output file
     call writeFile
     jmp encryption_loop
 
 done_encryption:
-    ; Close input and output files
+    ; Close the input file
     mov ebx, [fdIn]
     call closeFile
+    ; Close the output file
     mov ebx, [fdOut]
     call closeFile
     jmp exit_program
@@ -203,6 +204,4 @@ exit_program:
 ;---------------------------------------
 ; Sample input file: input.txt
 ;---------------------------------------
-; The sample input file "input.txt" should contain text similar to:
-; ABCDEFGHIJKLMNOPQRSTUVWXYZ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-; BBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+; The sample input file
