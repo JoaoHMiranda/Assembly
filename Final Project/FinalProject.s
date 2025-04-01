@@ -12,12 +12,10 @@ segment .data           ; Data segment
     outputFile  db "output.txt", 0
 
     errOpenIn   db "Error opening input file", 10, 0
-    errOpenOut  db "Output file already exists", 10, 0
     errCreate   db "Error creating output file", 10, 0
     successMsg  db "Encryption successful", 10, 0
 
     lenErrOpenIn  equ $-errOpenIn
-    lenErrOpenOut equ $-errOpenOut
     lenErrCreate  equ $-errCreate
     lenSuccess    equ $-successMsg
 
@@ -35,14 +33,13 @@ global _start
 ; Opens a file using syscall 5 (sys_open).
 ; Expects:
 ;   EBX = pointer to filename
-;   ECX = mode (e.g., 2 for read/write)
-;   EDX = permissions (set to 0o666 for read/write access)
+;   ECX = flags (e.g., for read/write)
+;   EDX = permissions (e.g., 0o666 for rw-rw-rw-)
 ; Returns:
 ;   EAX = file descriptor (or negative value on error)
 ;---------------------------------------
 openFile:
     mov eax, 5
-    mov edx, 0o666      ; Set permissions to 0666 (rw-rw-rw-)
     int 80h
     ret
 
@@ -55,19 +52,6 @@ readFile:
     mov ebx, [fdIn]
     mov ecx, buffer
     mov edx, 27
-    int 80h
-    ret
-
-;---------------------------------------
-; createFile:
-; Creates a file using syscall 8 (sys_creat).
-; Expects:
-;   EBX = pointer to filename
-;   ECX = permissions (set to 0o666 for read/write access)
-;---------------------------------------
-createFile:
-    mov eax, 8
-    mov ecx, 0o666      ; Set permissions to 0666
     int 80h
     ret
 
@@ -125,28 +109,24 @@ encryptChar:
 _start:
     ; Open the input file ("input.txt")
     mov ebx, inputFile
-    mov ecx, 2           ; read/write mode
+    mov ecx, 2           ; read/write mode (for input, mode "2" is acceptable)
     call openFile
     cmp eax, 0
     jl errorOpenIn       ; if error, jump to error handler
     mov [fdIn], eax
 
-    ; Try to open the output file ("output.txt")
+    ; Open (or create) the output file ("output.txt") for writing,
+    ; with flags: O_WRONLY | O_CREAT | O_TRUNC (1 | 64 | 512 = 577)
     mov ebx, outputFile
-    mov ecx, 2           ; read/write mode
+    mov ecx, 577         ; Flags: 1 (O_WRONLY) | 64 (O_CREAT) | 512 (O_TRUNC)
+    mov edx, 0o666       ; Permissions: 0666 (rw-rw-rw-)
     call openFile
     cmp eax, 0
-    jge errorOpenOut     ; if file exists, error
-
-    ; Create the output file
-    mov ebx, outputFile
-    call createFile
-    cmp eax, 0
-    jl errorCreate
+    jl errorCreate       ; if error, jump to error handler
     mov [fdOut], eax
 
 encryption_loop:
-    ; Read from the input file
+    ; Read from input file
     call readFile
     mov [bytesRead], eax
     cmp eax, 0
@@ -185,12 +165,6 @@ errorOpenIn:
     call printMessage
     jmp exit_program
 
-errorOpenOut:
-    mov ecx, errOpenOut
-    mov edx, lenErrOpenOut
-    call printMessage
-    jmp exit_program
-
 errorCreate:
     mov ecx, errCreate
     mov edx, lenErrCreate
@@ -204,4 +178,6 @@ exit_program:
 ;---------------------------------------
 ; Sample input file: input.txt
 ;---------------------------------------
-; The sample input file
+; The sample input file "input.txt" should contain text similar to:
+; ABCDEFGHIJKLMNOPQRSTUVWXYZ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+; BBBBBBBBBBBBBBBBBBBBBBBBBBBBB
