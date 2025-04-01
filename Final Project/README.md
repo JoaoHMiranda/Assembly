@@ -4,7 +4,6 @@ This project is a final assignment developed by João Henrique and Sophia Luna. 
     ```
     encrypted = 157 - original
     ```
-
 and writes the encrypted output to an output file (`output.txt`).
 
 ## Overview
